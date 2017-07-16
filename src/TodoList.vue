@@ -9,34 +9,39 @@
           <input class="input" placeholder="..." @keyup.enter="create" v-model="newTodo">
         </p>
       </li>
-      <todo v-bind="todo" v-for="todo in todos" :key="todo.id" @check="check" @destroy="destroy"
-            @updateText="updateText"></todo>
+      <draggable v-model="todos" @update="save">
+        <todo v-bind="todo" v-for="todo in todos" :key="todo.id" @check="check" @destroy="destroy"
+              @updateText="update"></todo>
+      </draggable>
     </ul>
   </div>
 </template>
 
 <script>
 import Todo from './Todo.vue'
-
-const localStorageKey = 'TODO_APP'
+import draggable from 'vuedraggable'
 
 export default {
   components: {
     Todo,
+    draggable,
   },
-  mounted() {
-    this.todos = localStorage.getItem(localStorageKey) ? JSON.parse(localStorage.getItem(localStorageKey)) : []
-  },
+  props: {localStorageKey: String},
   data() {
-    return {
+    let initData = {
       nextId: 1,
       newTodo: "",
       todos: [],
+      storageKey: this.localStorageKey || 'TODO_APP'
     }
+    if (localStorage.getItem(initData.storageKey)) {
+      initData = {...initData, ...JSON.parse(localStorage.getItem(initData.storageKey))}
+    }
+    return initData
   },
   methods: {
     check(id) {
-      const todo = this.todos.find((x) => x.id === id)
+      const todo = this.todos.find(x => x.id === id)
       todo.checked = !todo.checked
       this.save()
     },
@@ -54,11 +59,23 @@ export default {
       this.save()
     },
     save() {
-      localStorage.setItem(localStorageKey, JSON.stringify(this.todos))
+      localStorage.setItem(this.storageKey, JSON.stringify(
+        {
+          todos: this.todos,
+          nextId: this.nextId,
+        }
+      ))
     },
-    updateText(nexText, id) {
-      // TODO
+    update(text, id){
+      this.todos.find(x => x.id === id).text = text
     }
   },
 }
 </script>
+
+<style lang="sass">
+  .container
+    margin: auto
+    @media screen and (min-width: 1384px)
+      max-width: 800px
+</style>

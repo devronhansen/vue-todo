@@ -5,7 +5,7 @@
          v-model="newText"
          @focus="$event.target.select()"
          @blur="blur"
-         @keyup.enter="updateText" />
+         @keyup.enter="updateText"/>
 </template>
 
 <script>
@@ -33,14 +33,15 @@ export default {
 </script>
 
 <style scoped>
-.edit-field {
-  border: 0;
-  padding: 0;
-  font-size: 1rem;
-  line-height: 1.5;
-}
+  .edit-field {
+    border: 0;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    width: 90%;
+  }
 
-.edit-field:focus {
-  outline: 0;
-}
+  .edit-field:focus {
+    outline: 0;
+  }
 </style>
